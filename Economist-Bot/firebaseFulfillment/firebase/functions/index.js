@@ -15,7 +15,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
-  function welcome(agent) {
+  /*function welcome(agent) {
     var tipoInvestidorRef = db.collection('Investidor');
       return tipoInvestidorRef.get()
       .then((snapshot) => {
@@ -31,6 +31,24 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   
           }
           return Promise.resolve(tipoInvestidor);
+      })
+      .catch((err) => {
+          console.log('Ocorreu um erro: ', err);
+      });  
+  }*/
+
+  function welcome(agent) {
+    var welcomeRef = db.collection('Welcome');
+      return welcomeRef.get()
+      .then((snapshot) => {
+        let welcome = [];
+          for(let doc of snapshot.docs){
+            welcome.push(doc.data());
+          }
+          var resposta = welcome[Math.floor(Math.random() * welcome.length)];
+          agent.add(resposta);
+
+          return Promise.resolve(welcome);
       })
       .catch((err) => {
           console.log('Ocorreu um erro: ', err);
