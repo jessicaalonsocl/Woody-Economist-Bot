@@ -63,13 +63,52 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       divida = 1;
     }
 
-    console.log(estadocivil,dependentes,divida);
     let arrayRenda = [];
     arrayRenda.push(estadocivil);
     arrayRenda.push(dependentes);
     arrayRenda.push(divida);
 
     return arrayRenda;
+  }
+
+  function regrasEconomico (agent){
+    let economiza = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_economy);
+    let reserva = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_reserve);
+
+    if(economiza.length <= 2){
+      economiza = 0;
+    }else{ 
+      economiza = 1;
+    }
+
+    if(reserva.length <= 2){
+      reserva  = 0;
+    }else{
+      reserva = 1;
+    }
+
+    let arrayEconomico = [];
+    arrayEconomico.push(economiza);
+    arrayEconomico.push(reserva);
+
+    console.log(arrayEconomico);
+
+    return arrayEconomico;
+
+  }
+
+  function validarRegrasEconomico(agent){
+    let arrayEconomico = regrasEconomico (agent);
+    let economico;
+
+    if(arrayEconomico[0] == 1 && arrayEconomico[1]== 1) economico = 1;
+    if(arrayEconomico[0] == 1 && arrayEconomico[1]== 0) economico = 0;
+    if(arrayEconomico[0] == 0 && arrayEconomico[1]== 1) economico = 1;
+    if(arrayEconomico[0] == 0 && arrayEconomico[1]== 0) economico = 0;
+  
+    console.log(economico);
+    return economico;
+
   }
 
   function compare(arr1, arr2){
@@ -159,7 +198,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
   function tipoInvestidor(agent){
     let rendacomprometida = validarRenda(agent);
-    console.log(rendacomprometida);
+    let resultEconomico = validarRegrasEconomico (agent);
+    console.log("Result Economico ", resultEconomico);
     return rendacomprometida;
   }
 
