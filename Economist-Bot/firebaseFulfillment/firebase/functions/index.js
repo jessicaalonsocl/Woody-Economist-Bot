@@ -41,7 +41,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
   function verificaPerfil(tipoTolerante){
     let investiu = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_reserve_yes);
-    console.log(request.body.queryResult.outputContexts[0].parameters.number);
+    let naoInvestiu = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_no_reserve_no);
     let grau = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.number);
     let tipoPerfil = "";
 
@@ -49,6 +49,13 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       investiu = 0;
     }else{ 
       investiu = 1;
+    }
+    console.log(naoInvestiu);
+    console.log(naoInvestiu.length);
+    if(naoInvestiu.length <= 2){
+      naoInvestiu = 0;
+    }else{ 
+      naoInvestiu = 1;
     }
 
     if(grau >= 1 && grau <=33){
@@ -77,12 +84,12 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       }else if(investiu == 1 && tipoTolerante == 3){
         tipoPerfil = "perfil moderado";
       }
-    }else if (grau == 0){
-      if(investiu == 0 && tipoTolerante == 1){
+    }else if (naoInvestiu == 1){
+      if(tipoTolerante == 1){
         tipoPerfil = "perfil agressivo";
-      }else if(investiu == 0 && tipoTolerante == 2){
+      }else if(tipoTolerante == 2){
         tipoPerfil = "perfil moderado";
-      }else if(investiu == 1 && tipoTolerante == 3){
+      }else if(tipoTolerante == 3){
         tipoPerfil = "perfil conservador";
       }
     }
@@ -278,7 +285,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   }
 
   function resultadoUm(agent){
-    agent.add('Ok, obrigado(a)! Agora tenho o seu perfil de investidor, vou procurar aqui o melhor investimento para você.');
+    let result = tipoInvestidor(agent);
+    agent.add(result);
   }
 
   function resultadoDois(agent){
