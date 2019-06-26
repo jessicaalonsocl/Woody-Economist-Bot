@@ -39,38 +39,74 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     agent.add(`I'm sorry, can you try again?`);
   }
 
-  function regrasRenda (agent){
-    let solteiro = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.single_widower);
-    let dependentes = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_dependents);
-    let divida = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_debts);
-    let estadocivil;
+  function verificaPerfil(tipoTolerante){
+    let investiu = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_reserve_yes);
+    console.log(request.body.queryResult.outputContexts[0].parameters.number);
+    let grau = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.number);
+    let tipoPerfil = "";
 
-    if(solteiro.length <= 2){
-      estadocivil = 1;
+    if(investiu.length <= 2){
+      investiu = 0;
     }else{ 
-      estadocivil = 0;
+      investiu = 1;
     }
 
-    if(dependentes.length <= 2){
-      dependentes  = 0;
-    }else{
-      dependentes = 1;
+    if(grau >= 1 && grau <=33){
+      if(investiu == 1 && tipoTolerante == 1){
+        tipoPerfil = "perfil moderado";
+      }else if(investiu == 1 && tipoTolerante == 2){
+        tipoPerfil = "perfil conservador";
+      }else if(investiu == 1 && tipoTolerante == 3){
+        tipoPerfil = "perfil conservador";
+      }else if(investiu == 1 && tipoTolerante == 3){
+        tipoPerfil = "perfil conservador";
+      }
+    }else if (grau >= 34 && grau <=66){
+      if(investiu == 1 && tipoTolerante == 1){
+        tipoPerfil = "perfil agressivo";
+      }else if(investiu == 1 && tipoTolerante == 2){
+        tipoPerfil = "perfil moderado";
+      }else if(investiu == 1 && tipoTolerante == 3){
+        tipoPerfil = "perfil conservador";
+      }
+    }else if (grau >= 67 && grau <=100){
+      if(investiu == 1 && tipoTolerante == 1){
+        tipoPerfil = "perfil agressivo";
+      }else if(investiu == 1 && tipoTolerante == 2){
+        tipoPerfil = "perfil moderado";
+      }else if(investiu == 1 && tipoTolerante == 3){
+        tipoPerfil = "perfil moderado";
+      }
+    }else if (grau == 0){
+      if(investiu == 0 && tipoTolerante == 1){
+        tipoPerfil = "perfil agressivo";
+      }else if(investiu == 0 && tipoTolerante == 2){
+        tipoPerfil = "perfil moderado";
+      }else if(investiu == 1 && tipoTolerante == 3){
+        tipoPerfil = "perfil conservador";
+      }
     }
 
-    if (divida.length <= 2){
-      divida = 0;
-    }else{ 
-      divida = 1;
-    }
-
-    let arrayRenda = [];
-    arrayRenda.push(estadocivil);
-    arrayRenda.push(dependentes);
-    arrayRenda.push(divida);
-
-    return arrayRenda;
+    return tipoPerfil;
+    
   }
 
+  function regrasTolerante (resultRenda, resultEconomico){
+      let verificaTolerante;
+
+      // tolerante = 1
+      // pouco tolerante = 2 
+      // nao tolerante = 3
+ 
+      if(resultRenda == 1 && resultEconomico == 1) verificaTolerante = 2;
+      if(resultRenda == 1 && resultEconomico == 0) verificaTolerante = 3;
+      if(resultRenda == 0 && resultEconomico == 1) verificaTolerante = 1;
+      if(resultRenda == 0 && resultEconomico == 0) verificaTolerante = 2;
+
+      return verificaTolerante;
+
+  }
+  
   function regrasEconomico (agent){
     let economiza = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_economy);
     let reserva = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_reserve);
@@ -101,6 +137,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     let arrayEconomico = regrasEconomico (agent);
     let economico;
 
+    // economico = 1
+    // não economico = 0
     if(arrayEconomico[0] == 1 && arrayEconomico[1]== 1) economico = 1;
     if(arrayEconomico[0] == 1 && arrayEconomico[1]== 0) economico = 0;
     if(arrayEconomico[0] == 0 && arrayEconomico[1]== 1) economico = 1;
@@ -109,6 +147,38 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     console.log(economico);
     return economico;
 
+  }
+
+  function regrasRenda (agent){
+    let solteiro = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.single_widower);
+    let dependentes = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_dependents);
+    let divida = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.question_yes_debts);
+    let estadocivil;
+
+    if(solteiro.length <= 2){
+      estadocivil = 1;
+    }else{ 
+      estadocivil = 0;
+    }
+
+    if(dependentes.length <= 2){
+      dependentes  = 0;
+    }else{
+      dependentes = 1;
+    }
+
+    if (divida.length <= 2){
+      divida = 0;
+    }else{ 
+      divida = 1;
+    }
+
+    let arrayRenda = [];
+    arrayRenda.push(estadocivil);
+    arrayRenda.push(dependentes);
+    arrayRenda.push(divida);
+
+    return arrayRenda;
   }
 
   function compare(arr1, arr2){
@@ -187,20 +257,24 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     let renda = "";
     tipoDeRenda = verificarRegra(arr,arrR1,arrR2,arrR3,arrR4,arrR5,arrR6,arrR7,arrR8);
 
+    // Renda comprometida = 1
+    // Renda não comprometida = 0
     if(tipoDeRenda === true){
-      renda = "Renda Comprometida";
+      renda = 1;
     }else{
-      renda = "Renda não Comprometida";
+      renda = 0;
     }
 
     return (renda);
   }
 
   function tipoInvestidor(agent){
-    let rendacomprometida = validarRenda(agent);
+    let resultRenda = validarRenda(agent);
     let resultEconomico = validarRegrasEconomico (agent);
-    console.log("Result Economico ", resultEconomico);
-    return rendacomprometida;
+    let usuarioTolerancia = regrasTolerante(resultRenda, resultEconomico);
+    let perfilUsuario = verificaPerfil(usuarioTolerancia);
+
+    return perfilUsuario;
   }
 
   function resultadoUm(agent){
@@ -218,7 +292,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   intentMap.set('Default Fallback Intent', fallback);
   intentMap.set('get-reserve-no', resultadoUm);
   intentMap.set('get-satisfaction', resultadoDois);
-  // intentMap.set('your intent name here', yourFunctionHandler);
-  // intentMap.set('your intent name here', googleAssistantHandler);
+
   agent.handleRequest(intentMap);
 });
