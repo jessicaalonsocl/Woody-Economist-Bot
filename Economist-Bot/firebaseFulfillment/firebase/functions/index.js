@@ -45,17 +45,20 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     let grau = JSON.stringify(request.body.queryResult.outputContexts[0].parameters.number);
     let tipoPerfil = "";
 
-    if(investiu.length <= 2){
-      investiu = 0;
-    }else{ 
-      investiu = 1;
+    if(typeof investiu !== "undefined"){
+      if(investiu.length <= 2){
+        investiu = 0;
+      }else{ 
+        investiu = 1;
+      }
     }
-    console.log(naoInvestiu);
-    console.log(naoInvestiu.length);
-    if(naoInvestiu.length <= 2){
-      naoInvestiu = 0;
-    }else{ 
-      naoInvestiu = 1;
+
+    if(typeof naoInvestiu !== "undefined"){
+      if(naoInvestiu.length <= 2){
+        naoInvestiu = 0;
+      }else{ 
+        naoInvestiu = 1;
+      }
     }
 
     if(grau >= 1 && grau <=33){
