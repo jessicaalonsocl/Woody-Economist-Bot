@@ -294,17 +294,20 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
       agent.add("Bom, ",nome);
       agent.add("Seu perfil é CONSERVADOR");
       agent.add("Este é o perfil de quem não gosta de correr riscos. Não está disposto a aplicar dinheiro em investimentos que oscilam muito ou sua atual situação de vida não permite investimnetos que envolvam risco.");
-      agent.add("De acordo com seu perfil, recomendo que aplique na poupança")
+      agent.add("De acordo com seu perfil, recomendo que aplique em títulos prefixados");
+      agent.add("Agora preciso ir cowboy, qualquer duvida só mandar um Oi");
     }else if(perfilInvestidor === "perfil agressivo"){
       agent.add("Bom, ",nome);
       agent.add("Seu perfil é AGRESSIVO");
-      agent.add("Este é o perfil de quem está disposto a correr risco para conseguir a máxima rentabilidade possível para o dinheiro. Quem está propenso a investir a maior parte de seu dinheiro em aplicações que oscilam muito, destinando parcelas mínimas para aplicações mais seguras.");
-      agent.add("De acordo com seu perfil, recomendo que aplique em ações")
+      agent.add("Este é o perfil de quem está disposto a correr risco para conseguir a máxima rentabilidade possível para o dinheiro. Quem está disposto em investir a maior parte em ações voláteis tendo uma reserva de segurança e bastante tempo dedicado às notícias econômicas.");
+      agent.add("De acordo com seu perfil, recomendo que aplique em ações");
+      agent.add("Agora preciso ir cowboy, qualquer duvida só mandar um Oi");
     }else if(perfilInvestidor === "perfil moderado"){
       agent.add("Bom, ",nome);
       agent.add("Seu perfil é MODERADO");
-      agent.add("Este é o perfil de quem está disposto a correr pouco risco para obter uma rentabilidade maior. Quem está propenso a aplicar uma parcela significativa do dinheiro em investimentos que oscilam muito destinando o restante para aplicações mais seguras");
-      agent.add("De acordo com seu perfil, recomendo que aplique em Renda Fixa ou Poupança")
+      agent.add("Este é o perfil de quem está disposto a correr pouco risco para obter uma rentabilidade maior.");
+      agent.add("De acordo com seu perfil, recomendo que aplique em Renda Fixa ou ações pouco voláteis");
+      agent.add("Agora preciso ir cowboy, qualquer duvida só mandar um Oi");
     }
   }
 
