@@ -1,5 +1,4 @@
-const ChatbotService = require('./chatbotService.js');
-const ClassificadorPerfil = require('./classificadorPerfil.js');
+const ClassificadorPerfil = require('./classificadorPerfilController.js');
 
 module.exports = class ChatbotController{
   constructor(agent, requestBody){
@@ -8,11 +7,11 @@ module.exports = class ChatbotController{
   }
   
   welcome(){
-    return 'Olá';
+    return 'Olá me chamo Woody, Qual o seu nome?';
   }
 
   /**
-   * Determin o tipo de investidor
+   * Determina o tipo de investidor
    */
   tipoInvestidor(){
     let classificador = new ClassificadorPerfil(this.requestBody);

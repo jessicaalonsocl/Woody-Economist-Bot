@@ -1,8 +1,13 @@
-const regrasRenda = require('./regrasRenda.js');
+const regrasRenda = require('../Model/regrasRenda.js');
+const ChatbotService = require('../Services/chatbotService.js');
+
+
+
 module.exports = class ClassificadorPerfil{
+    
+
     constructor(requestBody){
         this.getDadosInvestidor(requestBody);
-        
         this.perfilInvestidor = {
             isRendaComprometida: 0,
             isInvestidorEconomico: 0,
@@ -14,6 +19,9 @@ module.exports = class ClassificadorPerfil{
         this.perfilInvestidor.toleranciaRisco = this.getToleranciaRisco();
     }
 
+    /** 
+     * O código abaixo obtém os dados do investidor
+     */
     getDadosInvestidor(requestBody){
         this.dadosInvestidor = {
             investiu: 0,
@@ -47,6 +55,9 @@ module.exports = class ClassificadorPerfil{
         this.dadosInvestidor.possuiDivida = respostaDivida.length <= 2 ? 0 : 1;
     }
 
+    /**
+     * O código abaixo verifica se o investidor é do tipo econômico
+     */
     getInvestidorEconomico(){
         if(this.dadosInvestidor.economiza == 1 && this.dadosInvestidor.reserva == 1) return 1;
         else if(this.dadosInvestidor.economiza == 1 && this.dadosInvestidor.reserva == 0) return 0;
@@ -54,6 +65,9 @@ module.exports = class ClassificadorPerfil{
         else if(this.dadosInvestidor.economiza == 0 && this.dadosInvestidor.reserva == 0) return 0;
     }
 
+    /** 
+     * O código abaixo verifica a tolerância do investidor quanto aos riscos
+     */
     getToleranciaRisco(){
         if(this.perfilInvestidor.isRendaComprometida == 1 && this.perfilInvestidor.isInvestidorEconomico == 1) return 2;
         else if(this.perfilInvestidor.isRendaComprometida == 1 && this.perfilInvestidor.isInvestidorEconomico == 0) return 3;
@@ -61,6 +75,9 @@ module.exports = class ClassificadorPerfil{
         else if(this.perfilInvestidor.isRendaComprometida == 0 && this.perfilInvestidor.isInvestidorEconomico == 0) return 2;
     }
 
+    /**
+     * O código abaixo verifica se o investidor possue renda comprometida 
+     */
     getRendaComprometida(){
         let regraRenda = regrasRenda.find(regra => {
             regra.possuiDivida === this.dadosInvestidor.possuiDivida &&
@@ -74,6 +91,9 @@ module.exports = class ClassificadorPerfil{
         return 0;
     }
 
+    /**
+     * O código abaixo retorna o tipo de perfil do investidor 
+     */
     getPerfilDeInvestimento(){    
         let tipoPerfil = '';
         if(this.dadosInvestidor.grauSatisfacao >= 1 && this.dadosInvestidor.grauSatisfacao <=33){

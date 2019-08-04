@@ -1,7 +1,7 @@
 const functions = require('firebase-functions');
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
-const ChatbotController = require('./chatbotController.js');
+const ChatbotController = require('../Controllers/chatbotController.js');
 
 
 process.env.DEBUG = 'dialogflow:debug'; // enables lib debugging statements
@@ -16,7 +16,7 @@ module.exports.dialogflowFirebaseFulfillment = functions.https.onRequest((reques
 
     function welcome(){agent.add(controller.welcome());}
     function tipoInvestidor(){agent.add(controller.tipoInvestidor());}
-
+    
     let intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome);
     // intentMap.set('Default Fallback Intent', fallback);
@@ -25,3 +25,12 @@ module.exports.dialogflowFirebaseFulfillment = functions.https.onRequest((reques
   
     agent.handleRequest(intentMap);
   });
+
+
+
+  
+
+
+
+
+
