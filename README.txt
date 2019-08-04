@@ -6,7 +6,7 @@ Chatbot
 	▪ Information that requires persistence will be stored in a Firebase database, NoSQL database running on the Google Cloud Platform.
 	▪ Chatbot will have authentication to protect sensitive data. (not implemented yet)
 	▪ To dialog with the agent directly, APIs will be used, without a graphical user interface, working with http requests.
-	▪ Agents are agnostic, running on multiple platforms. It will be integrated into a website, Facebook Messenger, Twitter, Skype and also Google Assistant.
+	▪ Agents are agnostic, running on multiple platforms. It will be integrated into a website (Vue.js), Facebook Messenger, Slack, and also Google Assistant.
 	▪ Voice interaction will be done through Google Home.
 	▪ You can give specific answers, for each platform, through text, image, video and audio.
 	▪ Android application in Java, communication will be via voice. Using speech recognition and synthesis. (not implemented yet)
@@ -16,4 +16,4 @@ Chatbot
 Version
 1.0
 
-Updated: 06/26/2019
+Updated: 08/04/2019
