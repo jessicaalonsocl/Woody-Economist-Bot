@@ -1,12 +1,12 @@
 const regrasRenda = require('../Model/regrasRenda.js');
 const ChatbotService = require('../Services/chatbotService.js');
-
-
+const ClassificadorPerfilRepository = require('../Repositories/classificadorPerfilRepository.js');
 
 module.exports = class ClassificadorPerfil{
-    
+
 
     constructor(requestBody){
+        this.repository = new ClassificadorPerfilRepository();
         this.getDadosInvestidor(requestBody);
         this.perfilInvestidor = {
             isRendaComprometida: 0,
@@ -20,7 +20,7 @@ module.exports = class ClassificadorPerfil{
     }
 
     /** 
-     * O código abaixo obtém os dados do investidor
+     * Obter dados do investidor
      */
     getDadosInvestidor(requestBody){
         this.dadosInvestidor = {
@@ -36,7 +36,7 @@ module.exports = class ClassificadorPerfil{
         let respostaInvestiu = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_yes_reserve_yes);
         this.dadosInvestidor.investiu = respostaInvestiu.length <= 2 ? 0 : 1;
         
-        let respostaNaoInvestiu = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_no_reserve_no);
+        let respostaNaoInvestiu = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_no_reserve);
         this.dadosInvestidor.naoInvestiu = respostaNaoInvestiu.length <= 2 ? 0 : 1;
 
         let respostaEconomiza = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_yes_economy);
@@ -56,7 +56,7 @@ module.exports = class ClassificadorPerfil{
     }
 
     /**
-     * O código abaixo verifica se o investidor é do tipo econômico
+     * Verificar se o investidor é do tipo econômico
      */
     getInvestidorEconomico(){
         if(this.dadosInvestidor.economiza == 1 && this.dadosInvestidor.reserva == 1) return 1;
@@ -66,7 +66,7 @@ module.exports = class ClassificadorPerfil{
     }
 
     /** 
-     * O código abaixo verifica a tolerância do investidor quanto aos riscos
+     * Verificar a tolerância do investidor quanto aos riscos
      */
     getToleranciaRisco(){
         if(this.perfilInvestidor.isRendaComprometida == 1 && this.perfilInvestidor.isInvestidorEconomico == 1) return 2;
@@ -76,7 +76,7 @@ module.exports = class ClassificadorPerfil{
     }
 
     /**
-     * O código abaixo verifica se o investidor possue renda comprometida 
+     * Verificar se o investidor possue renda comprometida 
      */
     getRendaComprometida(){
         let regraRenda = regrasRenda.find(regra => {
@@ -92,46 +92,63 @@ module.exports = class ClassificadorPerfil{
     }
 
     /**
-     * O código abaixo retorna o tipo de perfil do investidor 
+     * Retornar o tipo de perfil do investidor 
      */
-    getPerfilDeInvestimento(){    
-        let tipoPerfil = '';
-        if(this.dadosInvestidor.grauSatisfacao >= 1 && this.dadosInvestidor.grauSatisfacao <=33){
-            if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 1){
-                tipoPerfil = "perfil moderado";
-            }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 2){
-                tipoPerfil = "perfil conservador";
-            }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 3){
-                tipoPerfil = "perfil conservador";
-            }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 3){
-                tipoPerfil = "perfil conservador";
+    getPerfilDeInvestimento(){
+        return new Promise((resolve, reject) => {
+            let tipoPerfil = '';
+            if(this.dadosInvestidor.grauSatisfacao >= 1 && this.dadosInvestidor.grauSatisfacao <=33){
+                if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 1){
+                    tipoPerfil = "perfil moderado";
+                }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 2){
+                    tipoPerfil = "perfil conservador";
+                }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 3){
+                    tipoPerfil = "perfil conservador";
+                }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 3){
+                    tipoPerfil = "perfil conservador";
+                }
+            }else if (this.dadosInvestidor.grauSatisfacao >= 34 && this.dadosInvestidor.grauSatisfacao <=66){
+                if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 1){
+                    tipoPerfil = "perfil agressivo";
+                }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 2){
+                    tipoPerfil = "perfil moderado";
+                }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 3){
+                    tipoPerfil = "perfil conservador";
+                }
+            }else if (this.dadosInvestidor.grauSatisfacao >= 67 && this.dadosInvestidor.grauSatisfacao <=100){
+                if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 1){
+                    tipoPerfil = "perfil agressivo";
+                }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 2){
+                    tipoPerfil = "perfil moderado";
+                }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 3){
+                    tipoPerfil = "perfil moderado";
+                }
+            }else if (this.perfilInvestidor.naoInvestiu == 1){
+                if(this.perfilInvestidor.toleranciaRisco == 1){
+                    tipoPerfil = "perfil agressivo";
+                }else if(this.perfilInvestidor.toleranciaRisco == 2){
+                    tipoPerfil = "perfil moderado";
+                }else if(this.perfilInvestidor.toleranciaRisco == 3){
+                    tipoPerfil = "perfil conservador";
+                }
             }
-        }else if (this.dadosInvestidor.grauSatisfacao >= 34 && this.dadosInvestidor.grauSatisfacao <=66){
-            if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 1){
-                tipoPerfil = "perfil agressivo";
-            }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 2){
-                tipoPerfil = "perfil moderado";
-            }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 3){
-                tipoPerfil = "perfil conservador";
-            }
-        }else if (this.dadosInvestidor.grauSatisfacao >= 67 && this.dadosInvestidor.grauSatisfacao <=100){
-            if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 1){
-                tipoPerfil = "perfil agressivo";
-            }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 2){
-                tipoPerfil = "perfil moderado";
-            }else if(this.dadosInvestidor.investiu == 1 && this.perfilInvestidor.toleranciaRisco == 3){
-                tipoPerfil = "perfil moderado";
-            }
-        }else if (this.perfilInvestidor.naoInvestiu == 1){
-            if(this.perfilInvestidor.toleranciaRisco == 1){
-                tipoPerfil = "perfil agressivo";
-            }else if(this.perfilInvestidor.toleranciaRisco == 2){
-                tipoPerfil = "perfil moderado";
-            }else if(this.perfilInvestidor.toleranciaRisco == 3){
-                tipoPerfil = "perfil conservador";
-            }
-        }
-    
-        return tipoPerfil;
+            let dados = {
+                name: 'Name1',
+                state: 'CA', 
+                country: 'USA',
+                email:'teste4@teste.com', 
+                age: 21, 
+                genre: 'F',
+                date: new Date().toISOString().slice(0,10),
+                profile: tipoPerfil
+            };
+            
+            this.repository.insertClassificadorPerfil(dados).then(() => {
+                resolve(dados.profile);
+            }).catch(error => {
+                console.log(error);
+                reject();
+            });
+        }); 
     }
 }
