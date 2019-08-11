@@ -8,6 +8,7 @@ module.exports = class ClassificadorPerfilRepositório{
     conectiondb(){
 
       const admin = require('firebase-admin');
+      console.log("Connection");
       if (!admin.apps.length) {
           admin.initializeApp();
       }
@@ -40,10 +41,10 @@ module.exports = class ClassificadorPerfilRepositório{
      */
 
     insertClassificadorPerfil(profile){
+      console.log("Profile", profile);
       return new Promise((resolve, reject) => {
         const db = this.conectiondb();
-        const perfilRef = db.collection('usuario'); 
-        
+        const perfilRef = db.collection('profile');         
         perfilRef.doc(profile.email).set(profile).then(() => {
           resolve()
         }).catch(error => {

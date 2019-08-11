@@ -1,7 +1,9 @@
 const ClassificadorPerfil = require('./classificadorPerfilController.js');
+const InvestidorModel = require('../Model/perfilInvestidor.js');
 
 
 module.exports = class ChatbotController{
+  //receber um servico por injecao de dependencia
   constructor(agent, requestBody){
     this.requestBody = requestBody;
     this.agent = agent;
@@ -25,6 +27,7 @@ module.exports = class ChatbotController{
     //   });
     // });
     let classificador = new ClassificadorPerfil(this.requestBody);
+    let investidor = new InvestidorModel(this.requestBody);
     return classificador.getPerfilDeInvestimento();
   }
 

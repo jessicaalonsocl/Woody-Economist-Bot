@@ -1,4 +1,5 @@
 const regrasRenda = require('../Model/regrasRenda.js');
+const InvestidorModel = require('../Model/perfilInvestidor.js');
 const ChatbotService = require('../Services/chatbotService.js');
 const ClassificadorPerfilRepository = require('../Repositories/classificadorPerfilRepository.js');
 
@@ -7,6 +8,7 @@ module.exports = class ClassificadorPerfil{
 
     constructor(requestBody){
         this.repository = new ClassificadorPerfilRepository();
+        this.perfilModel = new InvestidorModel(requestBody);
         this.getDadosInvestidor(requestBody);
         this.perfilInvestidor = {
             isRendaComprometida: 0,
@@ -33,30 +35,39 @@ module.exports = class ClassificadorPerfil{
             possuiDependente: 0,
             possuiDivida: 0,
         }
+
+        //Já investiu
         let respostaInvestiu = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_yes_reserve_yes);
         this.dadosInvestidor.investiu = respostaInvestiu.length <= 2 ? 0 : 1;
         
+        //Não investiu
         let respostaNaoInvestiu = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_no_reserve);
         this.dadosInvestidor.naoInvestiu = respostaNaoInvestiu.length <= 2 ? 0 : 1;
 
+        //Economiza
         let respostaEconomiza = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_yes_economy);
         this.dadosInvestidor.economiza = respostaEconomiza.length <= 2 ? 0 : 1;
 
+        //Reserva
         let respostaReserva = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_yes_reserve);
         this.dadosInvestidor.reserva = respostaReserva.length <= 2 ? 0 : 1;
 
+        //Solteiro
         let respostaSolteiro = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.single_widower);
         this.dadosInvestidor.estadoCivil = respostaSolteiro.length <= 2 ? 0 : 1;
 
+        //Dependente
         let respostaDependente = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_yes_dependents);
         this.dadosInvestidor.possuiDependente = respostaDependente.length <= 2 ? 0 : 1;
 
+        //Divida
         let respostaDivida = JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.question_yes_debts);
         this.dadosInvestidor.possuiDivida = respostaDivida.length <= 2 ? 0 : 1;
     }
 
     /**
      * Verificar se o investidor é do tipo econômico
+     * economico = 1
      */
     getInvestidorEconomico(){
         if(this.dadosInvestidor.economiza == 1 && this.dadosInvestidor.reserva == 1) return 1;
@@ -67,6 +78,9 @@ module.exports = class ClassificadorPerfil{
 
     /** 
      * Verificar a tolerância do investidor quanto aos riscos
+     * pouco tolerante = 3
+     * tolerante = 1
+     * muito tolerante = 2
      */
     getToleranciaRisco(){
         if(this.perfilInvestidor.isRendaComprometida == 1 && this.perfilInvestidor.isInvestidorEconomico == 1) return 2;
@@ -132,16 +146,22 @@ module.exports = class ClassificadorPerfil{
                     tipoPerfil = "perfil conservador";
                 }
             }
-            let dados = {
-                name: 'Name1',
-                state: 'CA', 
-                country: 'USA',
-                email:'teste4@teste.com', 
-                age: 21, 
-                genre: 'F',
-                date: new Date().toISOString().slice(0,10),
-                profile: tipoPerfil
-            };
+
+            
+            let dados = this.perfilModel.UsuarioDados(tipoPerfil);
+
+            console.log("Dados", dados);
+
+            // let dados = {
+            //     name: 'Name1',
+            //     state: 'CA', 
+            //     country: 'USA',
+            //     email:'teste5@teste.com', 
+            //     age: 21, 
+            //     genre: 'F',
+            //     date: new Date().toISOString().slice(0,10),
+            //     profile: tipoPerfil
+            // };
             
             this.repository.insertClassificadorPerfil(dados).then(() => {
                 resolve(dados.profile);
