@@ -1,5 +1,3 @@
-// const dbManager = require('../utils/db_manager.js');
-
 module.exports = class perfilInvestidorModel{
 
 
@@ -178,13 +176,6 @@ module.exports = class perfilInvestidorModel{
             let dados = this.getUsuarioDados(requestBody, tipoPerfil);
 
             console.log("Dados", dados);
-            
-            // this.repository.insertClassificadorPerfil(dados).then(() => {
-            //     resolve(dados.profile);
-            // }).catch(error => {
-            //     console.log(error);
-            //     reject();
-            // });
 
             let db = new dbManager();
 
