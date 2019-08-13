@@ -1,10 +1,10 @@
-const dbManager = require('../utils/db_manager.js');
+// const dbManager = require('../utils/db_manager.js');
 
-module.exports = class ClassificadorPerfil{
+module.exports = class perfilInvestidorModel{
 
 
     constructor(requestBody){
-        this.repository = new dbManager();
+        // this.repository = new dbManager();
         this.getDadosInvestidor(requestBody);
         this.getUsuarioDados(requestBody);
         this.perfilInvestidor = {
@@ -136,7 +136,7 @@ module.exports = class ClassificadorPerfil{
     /**
      * Retornar o tipo de perfil do investidor 
      */
-    getPerfilDeInvestimento(requestBody){
+    getPerfilDeInvestimento(requestBody, dbManager){
         return new Promise((resolve, reject) => {
             let tipoPerfil = '';
             if(this.dadosInvestidor.grauSatisfacao >= 1 && this.dadosInvestidor.grauSatisfacao <=33){
@@ -179,7 +179,16 @@ module.exports = class ClassificadorPerfil{
 
             console.log("Dados", dados);
             
-            this.repository.insertClassificadorPerfil(dados).then(() => {
+            // this.repository.insertClassificadorPerfil(dados).then(() => {
+            //     resolve(dados.profile);
+            // }).catch(error => {
+            //     console.log(error);
+            //     reject();
+            // });
+
+            let db = new dbManager();
+
+            db.insertClassificadorPerfil(dados).then(() => {
                 resolve(dados.profile);
             }).catch(error => {
                 console.log(error);

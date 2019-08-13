@@ -41,7 +41,6 @@ module.exports = class dbManager{
      */
 
     insertClassificadorPerfil(profile){
-      console.log("Profile", profile);
       return new Promise((resolve, reject) => {
         const db = this.conectiondb();
         const perfilRef = db.collection('profile');         

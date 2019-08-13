@@ -1,7 +1,7 @@
-const perfilInvestidor = require('./perfil_investidor.model.js');
+const perfilInvestidorModel = require('./perfil_investidor.model.js');
+const dbManager = require('../utils/db_manager.js');
 
-
-module.exports = class ChatbotController{
+module.exports = class perfilInvestidorController{
   //receber um servico por injecao de dependencia
   constructor(agent, requestBody){
     this.requestBody = requestBody;
@@ -25,8 +25,9 @@ module.exports = class ChatbotController{
     //     reject(error);
     //   });
     // });
-    let classificador = new perfilInvestidor(this.requestBody);
-    return classificador.getPerfilDeInvestimento(this.requestBody);
+    let classificador = new perfilInvestidorModel(this.requestBody);
+    // let investidor = new InvestidorModel(this.requestBody);
+    return classificador.getPerfilDeInvestimento(this.requestBody, dbManager);
   }
 
 }

@@ -1,6 +1,5 @@
 const {WebhookClient} = require('dialogflow-fulfillment');
-const {Card, Suggestion} = require('dialogflow-fulfillment');
-const ChatbotController = require('../user/perfil_investidor.controller.js');
+const perfilInvestidorController = require('../user/perfil_investidor.controller.js');
 const functions = require('firebase-functions');
 
 
@@ -13,22 +12,27 @@ module.exports.dialogflowFirebaseFulfillment = functions.https.onRequest((reques
     console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
     console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
-    let controller = new ChatbotController(agent, request.body);
+    //IMPLANTAR INJECAO DE DEPENDENCIA
+    let controller = new perfilInvestidorController(agent, request.body);
 
-    function welcome(){agent.add(controller.welcome());}
+    function welcome(){
+      agent.add(controller.welcome());
+    }
     // function investidor(){
     //     controller.tipoInvestidor().then(tipoInvestidor => {
     //         tipoInvestidor = controller.tipoInvestidor();
     //         agent.add(tipoInvestidor);
     //     });
     // }
-    function investidor(){agent.add(controller.tipoInvestidor());}
+    
+    function tipoPerfilInvestidor(){agent.add(controller.tipoInvestidor());}
+    //function investidor(){agent.add(controller.tipoInvestidor());}
 
     let intentMap = new Map();
     intentMap.set('Default Welcome Intent', welcome);
     // intentMap.set('Default Fallback Intent', fallback);
-    intentMap.set('get-reserve-no', investidor);
-    intentMap.set('get-satisfaction', investidor);
+    intentMap.set('get-reserve-no', tipoPerfilInvestidor);
+    intentMap.set('get-satisfaction', tipoPerfilInvestidor);
 
     agent.handleRequest(intentMap);
   });
