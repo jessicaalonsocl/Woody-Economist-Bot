@@ -1,5 +1,5 @@
 'use strict';
  
-const ChatbotService = require('./Services/chatbotService.js');
+const chatbotService = require('./service/chatbot_service.view.js');
 
-module.exports.dialogflowFirebaseFulfillment = ChatbotService.dialogflowFirebaseFulfillment;
+module.exports.dialogflowFirebaseFulfillment = chatbotService.dialogflowFirebaseFulfillment;

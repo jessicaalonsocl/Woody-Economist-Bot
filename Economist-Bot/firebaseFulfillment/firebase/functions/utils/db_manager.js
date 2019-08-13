@@ -1,4 +1,4 @@
-module.exports = class ClassificadorPerfilRepositório{
+module.exports = class dbManager{
    
   //https://firebase.google.com/docs/firestore/query-data/get-data
 

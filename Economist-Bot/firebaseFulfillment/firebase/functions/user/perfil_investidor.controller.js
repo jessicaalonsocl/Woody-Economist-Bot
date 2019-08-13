@@ -1,5 +1,4 @@
-const ClassificadorPerfil = require('./classificadorPerfilController.js');
-const InvestidorModel = require('../Model/perfilInvestidor.js');
+const perfilInvestidor = require('./perfil_investidor.model.js');
 
 
 module.exports = class ChatbotController{
@@ -26,9 +25,8 @@ module.exports = class ChatbotController{
     //     reject(error);
     //   });
     // });
-    let classificador = new ClassificadorPerfil(this.requestBody);
-    let investidor = new InvestidorModel(this.requestBody);
-    return classificador.getPerfilDeInvestimento();
+    let classificador = new perfilInvestidor(this.requestBody);
+    return classificador.getPerfilDeInvestimento(this.requestBody);
   }
 
 }

@@ -1,15 +1,12 @@
-const regrasRenda = require('../Model/regrasRenda.js');
-const InvestidorModel = require('../Model/perfilInvestidor.js');
-const ChatbotService = require('../Services/chatbotService.js');
-const ClassificadorPerfilRepository = require('../Repositories/classificadorPerfilRepository.js');
+const dbManager = require('../utils/db_manager.js');
 
 module.exports = class ClassificadorPerfil{
 
 
     constructor(requestBody){
-        this.repository = new ClassificadorPerfilRepository();
-        this.perfilModel = new InvestidorModel(requestBody);
+        this.repository = new dbManager();
         this.getDadosInvestidor(requestBody);
+        this.getUsuarioDados(requestBody);
         this.perfilInvestidor = {
             isRendaComprometida: 0,
             isInvestidorEconomico: 0,
@@ -93,7 +90,8 @@ module.exports = class ClassificadorPerfil{
      * Verificar se o investidor possue renda comprometida 
      */
     getRendaComprometida(){
-        let regraRenda = regrasRenda.find(regra => {
+        let regras = this.getRegrasRenda();
+        let regraRenda = regras.find(regra => {
             regra.possuiDivida === this.dadosInvestidor.possuiDivida &&
             regra.estadoCivil === this.dadosInvestidor.estadoCivil &&
             regra.possuiDependente === this.dadosInvestidor.possuiDependente
@@ -105,10 +103,40 @@ module.exports = class ClassificadorPerfil{
         return 0;
     }
 
+    getUsuarioDados(requestBody, perfil){
+        this.usuario = {
+            name: JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.nome),
+            state: JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.Estado),
+            email: JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.email),
+            age: JSON.stringify(requestBody.queryResult.outputContexts[0].parameters.age),
+            date: new Date().toISOString().slice(0,10),
+            profile: ""
+        }
+
+        this.usuario.profile = perfil;
+        return this.usuario;
+    }
+
+
+    getRegrasRenda(){
+        let regras = [
+            { regra: 'R1', estadoCivil: 1, possuiDependente: 1, possuiDivida: 1, rendaComprometida: 1 },
+            { regra: 'R2', estadoCivil: 1, possuiDependente: 1, possuiDivida: 0, rendaComprometida: 1 },
+            { regra: 'R3', estadoCivil: 1, possuiDependente: 0, possuiDivida: 1, rendaComprometida: 1 },
+            { regra: 'R4', estadoCivil: 1, possuiDependente: 0, possuiDivida: 0, rendaComprometida: 0 },
+            { regra: 'R5', estadoCivil: 0, possuiDependente: 0, possuiDivida: 0, rendaComprometida: 0 },
+            { regra: 'R6', estadoCivil: 0, possuiDependente: 1, possuiDivida: 1, rendaComprometida: 1 },
+            { regra: 'R7', estadoCivil: 0, possuiDependente: 1, possuiDivida: 0, rendaComprometida: 0 },
+            { regra: 'R8', estadoCivil: 0, possuiDependente: 0, possuiDivida: 1, rendaComprometida: 1 },
+        ]
+
+        return regras;
+    }
+        
     /**
      * Retornar o tipo de perfil do investidor 
      */
-    getPerfilDeInvestimento(){
+    getPerfilDeInvestimento(requestBody){
         return new Promise((resolve, reject) => {
             let tipoPerfil = '';
             if(this.dadosInvestidor.grauSatisfacao >= 1 && this.dadosInvestidor.grauSatisfacao <=33){
@@ -147,21 +175,9 @@ module.exports = class ClassificadorPerfil{
                 }
             }
 
-            
-            let dados = this.perfilModel.UsuarioDados(tipoPerfil);
+            let dados = this.getUsuarioDados(requestBody, tipoPerfil);
 
             console.log("Dados", dados);
-
-            // let dados = {
-            //     name: 'Name1',
-            //     state: 'CA', 
-            //     country: 'USA',
-            //     email:'teste5@teste.com', 
-            //     age: 21, 
-            //     genre: 'F',
-            //     date: new Date().toISOString().slice(0,10),
-            //     profile: tipoPerfil
-            // };
             
             this.repository.insertClassificadorPerfil(dados).then(() => {
                 resolve(dados.profile);

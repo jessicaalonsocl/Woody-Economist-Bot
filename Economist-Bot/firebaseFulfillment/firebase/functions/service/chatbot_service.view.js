@@ -1,6 +1,6 @@
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
-const ChatbotController = require('../Controllers/chatbotController.js');
+const ChatbotController = require('../user/perfil_investidor.controller.js');
 const functions = require('firebase-functions');
 
 
